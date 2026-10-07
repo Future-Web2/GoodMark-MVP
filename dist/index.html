@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#14275a"><meta name="description" content="Goodmark — каталог периферии и аксессуаров по ценам из Telegram-прайса магазина. Наличие подтверждает менеджер.">
+ <title>Goodmark — техника для твоих идей</title>
+ <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+ <div class="topbar"><div class="wrap topbar-inner">
+  <span class="top-location" data-icon="location"></span><span>Ташкент · Малика B8</span>
+  <span class="top-demo" data-i18n="topNote">Цены из Telegram · наличие уточняется</span>
+  <a href="tel:+998998887787">+998 99 888 77 87</a>
+ </div></div>
+ <header class="header">
+  <div class="wrap header-main">
+   <a href="#home" class="logo" aria-label="Goodmark — главная"><span class="logo-symbol"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span>goodmark<span class="logo-dot">.</span><small>TECH THAT MOVES YOU</small></span></a>
+   <button class="catalog-button" id="catalog-nav" aria-label="Каталог"><span data-icon="grid"></span><span data-i18n="catalog">Каталог</span></button>
+   <form class="search" id="search-form" role="search"><span data-icon="search"></span><input id="search-input" type="search" maxlength="80" placeholder="Модель, бренд или «наушники»" aria-label="Поиск товаров"><kbd>/</kbd></form>
+   <button class="header-action" id="favorite-nav" aria-label="Избранное"><span data-icon="heart"></span><span class="action-label" data-i18n="favorites">Избранное</span></button>
+   <button class="header-action" id="cart-nav" aria-label="Открыть корзину"><span class="cart-icon"><span data-icon="cart"></span><b class="cart-count">0</b></span><span class="action-label" data-i18n="cart">Корзина</span></button>
+  </div>
+  <nav class="wrap header-links">
+   <a href="#catalog" data-category="mouse" data-i18n="navMouse">Мыши</a>
+   <a href="#catalog" data-category="keyboard" data-i18n="navKeyboard">Клавиатуры</a>
+   <a href="#catalog" data-category="all" data-kind="headset" data-i18n="navHeadset">Наушники</a>
+   <a href="#catalog" data-category="all" data-kind="microphone" data-i18n="navMic">Микрофоны</a>
+   <span class="nav-spacer"></span>
+   <button id="bot-nav"><span data-icon="telegram"></span>Telegram</button>
+   <a href="#insights"><span data-icon="chart"></span><span data-i18n="insights">Бизнес-демо</span></a>
+   <button id="lang-toggle" aria-label="Переключить язык">RU <span> / UZ</span></button>
+  </nav>
+ </header>
+ <main>
+ <div id="shop-view">
+  <section class="wrap hero" id="home">
+   <div class="hero-main">
+    <div class="hero-copy">
+     <span class="eyebrow"><span></span>GOODMARK · МАЛИКА B8</span>
+     <h1 data-i18n="heroTitle">Собери свой<br><em>сетап.</em></h1>
+     <p data-i18n="heroText">Мыши, клавиатуры, звук и аксессуары из прайса Goodmark.<br>Цены — из Telegram, наличие подтвердит менеджер.</p>
+     <a class="button button-dark" href="#catalog"><span data-i18n="explore">Смотреть каталог</span><span data-icon="arrow"></span></a>
+     <div class="hero-note"><span class="tiny-dots"><i></i><i></i><i></i></span><span id="hero-count"></span></div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+     <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="visual-word">SETUP.</span>
+     <div id="hero-device"></div>
+     <div class="device-label"><span class="status-dot"></span><div data-i18n="heroLabel">СОБЕРИ СВОЙ СЕТАП<small>Иллюстрация, не фото товара</small></div><span data-icon="arrow"></span></div>
+    </div>
+   </div>
+   <div class="hero-ai">
+    <span class="ai-label"><span data-icon="spark"></span> GOODMARK AI</span>
+    <h2 data-i18n="aiTitle">Скажи, что нужно.<br><span>Я найду.</span></h2>
+    <p data-i18n="aiText">Подберу модели из прайса по задаче,<br>бренду и бюджету в у.е.</p>
+    <div class="ai-preview">
+     <div class="preview-user">Нужны беспроводные наушники Logitech до 120 у.е.</div>
+     <div class="preview-ai"><span data-icon="spark"></span><span>Покажу подходящие модели из прайса. В корзину — только после твоего подтверждения.</span></div>
+     <div class="mini-products"><div id="mini-one"></div><span>·</span><div id="mini-two"></div></div>
+    </div>
+    <button class="button button-lime" id="hero-ai-button"><span data-i18n="tryAi">Попробовать AI-подбор</span><span data-icon="arrow"></span></button>
+    <small class="ai-disclosure" data-i18n="aiDisclosure">Сценарный помощник · без внешнего AI</small>
+    <div class="ai-stars">✧</div>
+   </div>
+  </section>
+  <section class="wrap service-strip">
+   <div><span data-icon="location"></span><span><strong data-i18n="service1">Онлайн → Малика B8</strong><small data-i18n="service1sub">Выбери здесь, обсуди в магазине</small></span></div>
+   <div><span data-icon="spark"></span><span><strong data-i18n="service2">Умный подбор</strong><small data-i18n="service2sub">По задаче, бренду и бюджету</small></span></div>
+   <div><span data-icon="telegram"></span><span><strong data-i18n="service3">Цены из Telegram</strong><small data-i18n="service3sub">Дата прайса в каждой карточке</small></span></div>
+  </section>
+  <section class="wrap category-section">
+   <div class="section-heading"><h2 data-i18n="categoryTitle">Что в твоём следующем сетапе?</h2><span class="muted section-aside">FIND YOUR NEXT UPGRADE</span></div>
+   <div class="category-grid" id="categories"></div>
+   <p class="category-note" id="category-note" hidden></p>
+  </section>
+  <section class="wrap catalog-section" id="catalog">
+   <div class="section-heading">
+    <div><span class="eyebrow catalog-eyebrow">GOODMARK · TELEGRAM PRICE</span><h2 id="catalog-title">Каталог</h2></div>
+    <span class="catalog-result" id="result-count"></span>
+   </div>
+   <div class="catalog-toolbar">
+    <button class="filters-toggle" id="filters-toggle" type="button" aria-expanded="false" aria-controls="filter-panel"><span data-icon="menu"></span><span data-i18n="filters">Фильтры</span><b id="filter-count" hidden></b></button>
+    <div class="sort-controls">
+     <label for="sort" data-i18n="sortLabel">Сортировка</label>
+     <select id="sort"><option value="featured">Как в прайсе</option><option value="low">Сначала дешевле</option><option value="high">Сначала дороже</option><option value="name">По названию</option><option value="new">Свежий прайс</option></select>
+    </div>
+   </div>
+   <form class="filter-panel" id="filter-panel" aria-label="Фильтры каталога">
+    <div class="field"><label for="f-category" data-i18n="fCategory">Категория</label><select id="f-category"></select></div>
+    <div class="field"><label for="f-brand" data-i18n="fBrand">Бренд</label><select id="f-brand"></select></div>
+    <div class="field"><label for="f-kind" data-i18n="fKind">Тип</label><select id="f-kind"></select></div>
+    <div class="field"><label for="f-connection" data-i18n="fConnection">Подключение</label><select id="f-connection"><option value="">Любое</option><option value="wireless">Беспроводное</option><option value="wired">Проводное</option></select></div>
+    <div class="field price-range"><label for="f-price-min" data-i18n="fPrice">Цена, у.е.</label><div><input id="f-price-min" type="number" min="0" step="0.01" inputmode="decimal" placeholder="от" aria-label="Цена от, у.е."><span>—</span><input id="f-price-max" type="number" min="0" step="0.01" inputmode="decimal" placeholder="до" aria-label="Цена до, у.е."></div></div>
+    <button type="button" class="button button-outline" data-reset><span data-i18n="reset">Сбросить</span></button>
+   </form>
+   <div id="active-filters"></div>
+   <div class="product-grid" id="products"></div>
+   <div id="empty-state" class="empty-state" hidden><span data-icon="search"></span><h3 data-i18n="emptyTitle">Пока ничего не нашли</h3><p data-i18n="emptyText">Попробуй другую модель, бренд или сними часть фильтров.</p><button class="button button-dark" data-reset data-i18n="resetFilters">Сбросить фильтры</button></div>
+   <p class="catalog-disclosure" data-i18n="catalogDisclosure">Цены — из публикаций Telegram-канала Goodmark, в у.е.; дата и ссылка на публикацию — в карточке товара. Наличие на сайте не отслеживается и подтверждается менеджером. Изображения — иллюстрации, а не фотографии товаров.</p>
+  </section>
+  <section class="wrap usecase-banner">
+   <div class="usecase-copy"><span class="eyebrow">ONE REQUEST. YOUR SETUP.</span><h2 data-i18n="usecaseTitle">Не знаешь модель?<br>Начни с задачи.</h2><p data-i18n="usecaseText">«Нужен микрофон для видео», «беспроводная мышь до 50 у.е.» —<br>помощник отфильтрует прайс за тебя.</p><button class="button button-dark" id="usecase-ai"><span data-icon="spark"></span><span data-i18n="askAi">Спросить Goodmark AI</span></button></div>
+   <div class="usecase-scenes">
+    <button class="scene" data-prompt="Нужен микрофон для записи видео"><span data-icon="headphones"></span><strong>CREATE</strong><span>Микрофоны и держатели ↗</span></button>
+    <button class="scene scene-blue" data-prompt="Помоги выбрать беспроводную мышь"><span data-icon="mouse"></span><strong>PLAY</strong><span>Беспроводные мыши ↗</span></button>
+    <button class="scene scene-gray" data-prompt="Подбери клавиатуру"><span data-icon="keyboard"></span><strong>TYPE</strong><span>Клавиатуры из прайса ↗</span></button>
+   </div>
+  </section>
+  <section class="wrap telegram-banner"><span class="telegram-orb" data-icon="telegram"></span><div><h2 data-i18n="tgTitle">Goodmark теперь ещё ближе.</h2><p data-i18n="tgText">Каталог, подбор и связь с магазином — в знакомом Telegram.</p></div><button class="button button-outline" id="bot-preview"><span data-i18n="tgButton">Посмотреть бот-демо</span><span data-icon="arrow"></span></button></section>
+ </div>
+ <section id="insights-view" class="wrap insights-view" hidden></section>
+ </main>
+ <footer class="footer">
+  <div class="wrap footer-main">
+   <div><a href="#home" class="logo footer-logo">goodmark<span class="logo-dot">.</span></a><p>Техника для твоих идей.<br>Ташкент · Малика B8</p></div>
+   <div><strong>Магазин</strong><a href="#catalog">Каталог</a><button id="footer-ai">Goodmark AI · сценарий</button><button id="footer-bot">Telegram-бот · прототип</button></div>
+   <div><strong>Связаться</strong><a href="https://t.me/goodmarkuzmalika" target="_blank" rel="noopener noreferrer" data-manager-link="footer">Менеджер Малика ↗</a><a href="https://t.me/goodmark_uz" target="_blank" rel="noopener noreferrer">Telegram-канал ↗</a><a href="https://www.instagram.com/goodmarkuz/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div>
+   <div><strong>Для презентации</strong><a href="#insights">Аналитика и импорт</a><span>MVP · 2026</span><span>Цены из Telegram · наличие уточняется</span></div>
+  </div>
+  <div class="wrap footer-bottom"><span>GOODMARK AI MARKET / PRESENTATION MVP</span><span>Собрано вокруг твоих идей.</span></div>
+ </footer>
+ <button class="floating-ai" id="floating-ai" aria-label="Открыть Goodmark AI"><span data-icon="spark"></span><span>Goodmark AI</span><span class="status-dot"></span></button>
+ <nav class="mobile-nav" aria-label="Быстрые действия">
+  <button id="m-catalog"><span data-icon="grid"></span><span data-i18n="catalog">Каталог</span></button>
+  <button id="m-ai"><span data-icon="spark"></span><span>AI</span></button>
+  <button id="m-cart"><span class="cart-icon"><span data-icon="cart"></span><b class="cart-count">0</b></span><span data-i18n="cart">Корзина</span></button>
+  <a href="https://t.me/goodmarkuzmalika" target="_blank" rel="noopener noreferrer" data-manager-link="mobile_nav"><span data-icon="telegram"></span><span data-i18n="manager">Менеджер</span></a>
+ </nav>
+ <dialog id="assistant-dialog" class="drawer assistant-drawer">
+  <div class="drawer-head"><div class="drawer-title"><span class="ai-avatar" data-icon="spark"></span><div><strong>Goodmark AI</strong><small id="assistant-mode">Сценарный помощник · без внешнего AI</small></div></div><button class="icon-button" data-close="assistant-dialog" aria-label="Закрыть помощника"><span data-icon="close"></span></button></div>
+  <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+  <div class="chat-prompts" id="chat-prompts"><button data-prompt="Нужны беспроводные наушники Logitech до 120 у.е.">Наушники до 120 у.е.</button><button data-prompt="Fifine TAM8 и BM88">Fifine TAM8 + BM88</button><button data-prompt="Мышь Logitech">Мышь Logitech</button><button data-prompt="Покажи корзину">Моя корзина</button></div>
+  <form class="chat-form" id="chat-form"><input id="chat-input" placeholder="Модель, задача или бюджет в у.е.…" aria-label="Сообщение помощнику" maxlength="1500" autocomplete="off"><button type="submit" aria-label="Отправить сообщение"><span data-icon="arrow"></span></button></form>
+  <p class="chat-footnote">Товары добавляются в корзину только после твоего подтверждения.</p>
+ </dialog>
+ <dialog id="cart-dialog" class="drawer">
+  <div class="drawer-head"><div><h2 data-i18n="yourCart">Твоя корзина</h2><small data-i18n="cartNote">Цены из Telegram-прайса в у.е. · наличие уточняется</small></div><button class="icon-button" data-close="cart-dialog" aria-label="Закрыть корзину"><span data-icon="close"></span></button></div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-summary" id="cart-summary"></div>
+ </dialog>
+ <dialog id="product-dialog" class="product-dialog"><button class="icon-button modal-close" data-close="product-dialog" aria-label="Закрыть карточку"><span data-icon="close"></span></button><div id="product-detail"></div></dialog>
+ <dialog id="bot-dialog" class="bot-dialog">
+  <div class="drawer-head"><div class="drawer-title"><span class="telegram-avatar" data-icon="telegram"></span><div><strong>Goodmark Bot</strong><small>Интерактивный прототип Telegram-бота</small></div></div><button class="icon-button" data-close="bot-dialog" aria-label="Закрыть бот-демо"><span data-icon="close"></span></button></div>
+  <div class="bot-body" id="bot-body"></div>
+  <div class="bot-menu"><button data-bot="catalog">🛍 Каталог</button><button data-bot="ai">✧ AI-подбор</button><button data-bot="cart">🛒 Корзина</button><button data-bot="manager">💬 Менеджер</button></div>
+  <div class="bot-caption">Прототип в браузере. Настоящий бот не подключён: нужен токен BotFather.</div>
+ </dialog>
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
+ <script type="module" src="app.js"></script>
+</body></html>

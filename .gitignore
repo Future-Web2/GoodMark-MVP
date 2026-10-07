@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+.openai/
+runtime/
+*.tar.gz
+node_modules/
