@@ -1,6 +1,5 @@
 import * as catalogData from './catalog.js';
 import {icon,art} from './art.js';
-import {PAGE_FILES,pageFromPath,createPageUrl} from './navigation.js';
 import {
  CURRENCY_LABEL,MAX_QTY,MANAGER_URL,KIND_LABELS,CONNECTION_LABELS,
  formatAmount,formatUE,formatDate,isSourceUrl,findProduct,isOrderable,maxQty,validateItems,cartTotal,
@@ -10,9 +9,6 @@ import {
 
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const PAGE=document.body.dataset.page||pageFromPath(location.pathname);
-const CATALOG_PAGES=new Set(['catalog','mouse','keyboard','audio','favorites']);
-const query=new URLSearchParams(location.search);
 
 // ---------- catalogue & storage ----------
 
@@ -57,9 +53,8 @@ let cart=sanitizeCart(store.read(KEY.cart,[]));
 let favorites=(Array.isArray(store.read(KEY.favorites,[]))?store.read(KEY.favorites,[]):[]).filter(id=>findProduct(catalog,id));
 let events=Array.isArray(store.read(KEY.events,[]))?store.read(KEY.events,[]):[];
 let lang=store.read(KEY.lang,'ru')==='uz'?'uz':'ru';
-let filters={...readFilters(location.search,{categoryIds}),favoritesOnly:PAGE==='favorites'};
-if(document.body.dataset.category&&!query.has('category'))filters.category=document.body.dataset.category;
-let sort=['featured','low','high','name','new'].includes(query.get('sort'))?query.get('sort'):'featured',pending=null,busy=false,backend=false,cartMode='items',currentDraft=null,openProductId=null;
+let filters={...readFilters(location.search,{categoryIds}),favoritesOnly:false};
+let sort='featured',pending=null,busy=false,backend=false,cartMode='items',currentDraft=null,openProductId=null;
 const filterSets=new Map();let filterSetSerial=0;
 const ctx=()=>({categories,aliases,favorites,categoryIds});
 
@@ -89,22 +84,16 @@ function track(type,data={}){
 const L=(ru,uz)=>lang==='uz'?uz:ru;
 const tr={
  topNote:['Цены из Telegram · наличие уточняется','Narxlar Telegramdan · mavjudligi aniqlanadi'],
- catalog:['Каталог','Katalog'],favorites:['Избранное','Saralangan'],cart:['Корзина','Savat'],manager:['Менеджер','Menejer'],navSound:['Звук','Audio'],navContacts:['Контакты','Aloqa'],viewAll:['Смотреть весь каталог','Barcha tovarlarni ko‘rish'],home:['Главная','Bosh sahifa'],
+ catalog:['Каталог','Katalog'],favorites:['Избранное','Saralangan'],cart:['Корзина','Savat'],manager:['Менеджер','Menejer'],
  navMouse:['Мыши','Sichqonchalar'],navKeyboard:['Клавиатуры','Klaviaturalar'],navHeadset:['Наушники','Quloqchinlar'],navMic:['Микрофоны','Mikrofonlar'],
  insights:['Бизнес-демо','Biznes demo'],
- heroTitle:['Техника для<br><em>твоих идей.</em>','G‘oyalaringiz<br><em>uchun texnika.</em>'],
- heroText:['Для работы, игры и всего, что ты создаёшь.<br> Выбирай мыши, клавиатуры и звук из прайса Goodmark.','Ish, o‘yin va ijod uchun.<br> Goodmark narxnomasidan sichqoncha, klaviatura va audio tanlang.'],
- helpChoose:['Помоги выбрать','Tanlashga yordam'],heroFeature:['Звук.<br>В фокусе.','Ovoz.<br>Diqqat markazida.'],
- brandsTitle:['Бренды твоего сетапа','Setapingiz brendlari'],
- catalogCaption:['Выбирай своё. Подробности прайса — в каждой карточке.','O‘zingizga mosini tanlang. Narxnoma tafsilotlari har bir kartochkada.'],
- filterHelp:['Цены в у.е. Наличие подтвердит менеджер.','Narxlar y.e.da. Mavjudligini menejer tasdiqlaydi.'],
+ heroTitle:['Собери свой<br><em>сетап.</em>','O‘z setapingizni<br><em>yig‘ing.</em>'],
+ heroText:['Мыши, клавиатуры, звук и аксессуары из прайса Goodmark.<br>Цены — из Telegram, наличие подтвердит менеджер.','Goodmark narxnomasidagi sichqoncha, klaviatura, audio va aksessuarlar.<br>Narxlar Telegramdan, mavjudligini menejer tasdiqlaydi.'],
  explore:['Смотреть каталог','Katalogni ko‘rish'],
  heroLabel:['СОБЕРИ СВОЙ СЕТАП<small>Иллюстрация, не фото товара</small>','SETAPINGIZNI YIG‘ING<small>Illyustratsiya, tovar fotosurati emas</small>'],
- aiTitle:['Твой запрос.<br><span>Готовый подбор.</span>','Sizning so‘rovingiz.<br><span>Tayyor tanlov.</span>'],
+ aiTitle:['Скажи, что нужно.<br><span>Я найду.</span>','Nima kerakligini ayting.<br><span>Men topaman.</span>'],
  aiText:['Подберу модели из прайса по задаче,<br>бренду и бюджету в у.е.','Narxnomadan vazifa, brend va<br>y.e.dagi byudjet bo‘yicha tanlayman.'],
  tryAi:['Попробовать AI-подбор','AI yordamida tanlash'],aiDisclosure:['Сценарный помощник · без внешнего AI','Ssenariyli yordamchi · tashqi AI’siz'],
- previewUser:['Нужны беспроводные наушники Logitech до 120 у.е.','120 y.e.gacha Logitech simsiz quloqchinlari kerak.'],
- previewAi:['Подберу варианты из прайса. Ты решаешь, что добавить в корзину.','Narxnomadan variantlar topaman. Savatga nimani qo‘shishni siz hal qilasiz.'],
  service1:['Онлайн → Малика B8','Onlayn → Malika B8'],service1sub:['Выбери здесь, обсуди в магазине','Bu yerda tanlang, do‘konda maslahatlashing'],
  service2:['Умный подбор','Aqlli tanlov'],service2sub:['По задаче, бренду и бюджету','Vazifa, brend va byudjet bo‘yicha'],
  service3:['Цены из Telegram','Narxlar Telegramdan'],service3sub:['Дата прайса в каждой карточке','Har bir kartochkada narx sanasi'],
@@ -117,7 +106,6 @@ const tr={
  usecaseTitle:['Не знаешь модель?<br>Начни с задачи.','Modelni bilmaysizmi?<br>Vazifadan boshlang.'],
  usecaseText:['«Нужен микрофон для видео», «беспроводная мышь до 50 у.е.» —<br>помощник отфильтрует прайс за тебя.','«Video uchun mikrofon», «50 y.e. gacha simsiz sichqoncha» —<br>yordamchi narxnomani siz uchun saralaydi.'],
  askAi:['Спросить Goodmark AI','Goodmark AI’dan so‘rash'],
- sceneCreate:['Микрофоны и держатели ↗','Mikrofonlar va ushlagichlar ↗'],scenePlay:['Мыши из прайса ↗','Narxnomadagi sichqonchalar ↗'],sceneType:['Клавиатуры из прайса ↗','Narxnomadagi klaviaturalar ↗'],
  tgTitle:['Goodmark теперь ещё ближе.','Goodmark endi yanada yaqin.'],tgText:['Каталог, подбор и связь с магазином — в знакомом Telegram.','Katalog, tanlov va do‘kon bilan aloqa — Telegramda.'],
  tgButton:['Посмотреть бот-демо','Bot demosini ko‘rish'],yourCart:['Твоя корзина','Savatingiz'],
  cartNote:['Цены из Telegram-прайса в у.е. · наличие уточняется','Narxlar Telegram narxnomasidan, y.e. · mavjudligi aniqlanadi']
@@ -126,7 +114,6 @@ const kindLabel=k=>KIND_LABELS[k]?.[lang==='uz'?1:0]||k||'';
 const connectionLabel=c=>CONNECTION_LABELS[c]?.[lang==='uz'?1:0]||'';
 const categoryLabel=id=>{const c=categories.find(c=>c[0]===id);return c?c[lang==='uz'?2:1]:id;};
 const money=n=>`${formatAmount(n)} <small>${CURRENCY_LABEL}</small>`;
-const productCount=n=>`${n} ${L(n%100>=11&&n%100<=14?'товаров':n%10===1?'товар':n%10>=2&&n%10<=4?'товара':'товаров','tovar')}`;
 const cartCount=()=>cart.reduce((s,i)=>s+i.qty,0);
 function availabilityLabel(p){
  if(p.stock===0)return L('Нет в наличии','Mavjud emas');
@@ -138,10 +125,6 @@ function translate(){
  document.documentElement.lang=lang;
  $('#lang-toggle').innerHTML=lang==='uz'?'UZ <span> / RU</span>':'RU <span> / UZ</span>';
  $('#search-input').placeholder=L('Модель, бренд или «наушники»','Model, brend yoki «quloqchin»');
- const sortLabels=[L('Как в прайсе','Narxnomadagi tartib'),L('Сначала дешевле','Avval arzonlari'),L('Сначала дороже','Avval qimmatlari'),L('По названию','Nomi bo‘yicha'),L('Свежий прайс','Yangi narxnoma')];
- [...$('#sort').options].forEach((option,i)=>option.textContent=sortLabels[i]);
- $('#search-input').setAttribute('aria-label',L('Поиск по всему каталогу','Butun katalogdan qidirish'));
- $('#search-input').setAttribute('aria-description',L('Поиск по всем товарам, независимо от выбранных фильтров.','Tanlangan filtrlardan qat’i nazar barcha tovarlardan qidiradi.'));
  renderStorefront();
 }
 
@@ -161,12 +144,11 @@ function artFor(p){
 let toastTimer;
 function toast(t){$('#toast').textContent=t;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3500);}
 function show(id){
- if($('#'+id).tagName!=='DIALOG')return;
  if($('#'+id).open)return;
  document.querySelectorAll('dialog[open]').forEach(d=>d.close());
  $('#'+id).showModal();document.body.style.overflow='hidden';
 }
-function close(id){const el=$('#'+id);if(el?.tagName==='DIALOG')el.close();}
+function close(id){$('#'+id).close();}
 $$('dialog').forEach(d=>{
  d.addEventListener('close',()=>{
   if(d.id==='product-dialog'){openProductId=null;setUrlParam('product','');}
@@ -180,37 +162,7 @@ $$('dialog').forEach(d=>{
 });
 function replaceSearch(search){history.replaceState(null,'',location.pathname+search+location.hash);}
 function setUrlParam(key,value){replaceSearch(setSearchParam(location.search,key,value));}
-function syncFiltersToUrl(){
- if(!CATALOG_PAGES.has(PAGE))return;
- let search=writeFilters(location.search,filters);
- if(document.body.dataset.category&&filters.category==='all')search=setSearchParam(search,'category','all');
- replaceSearch(search);
- try{sessionStorage.setItem('gm-last-catalog',location.pathname+location.search);}catch{}
- updatePageLinks();
-}
-function pageUrl(page,params={}){return createPageUrl(page,{currentUrl:location.href,params,attribution});}
-function navigate(page,params={}){saveChat();location.assign(pageUrl(page,params));}
-function filterParams(){return {category:filters.category==='all'?'':filters.category,brand:filters.brand,q:filters.q,kind:filters.kind,connection:filters.connection,price_min:filters.priceMin,price_max:filters.priceMax,sort:sort==='featured'?'':sort};}
-function lastCatalogUrl(){
- try{
-  const saved=sessionStorage.getItem('gm-last-catalog');
-  const u=new URL(saved||pageUrl('catalog'),location.href);
-  const here=new URL('.',location.href),there=new URL('.',u);
-  if(u.origin===location.origin&&there.pathname===here.pathname&&CATALOG_PAGES.has(pageFromPath(u.pathname)))return u.pathname+u.search;
- }catch{}
- return pageUrl('catalog');
-}
-function updatePageLinks(){
- $$('a[data-page-link]').forEach(a=>{
-  const params=a.dataset.kind?{kind:a.dataset.kind}:{};
-  a.href=pageUrl(a.dataset.pageLink,params);
-  const active=a.dataset.pageLink===PAGE&&(!a.dataset.kind||a.dataset.kind===filters.kind);
-  if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
- });
- $$('a[data-back-catalog]').forEach(a=>{a.href=lastCatalogUrl();});
- const picker=$('#version-picker-link');
- if(picker&&new URL('.',location.href).pathname.endsWith('/v2/')){picker.hidden=false;picker.href=createPageUrl('home',{currentUrl:new URL('../index.html',location.href).href,attribution});}
-}
+function syncFiltersToUrl(){replaceSearch(writeFilters(location.search,filters));}
 function downloadFile(content,name,type){
  const url=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');
  a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -233,9 +185,6 @@ function managerLink(from,label=L('Написать менеджеру ↗','Men
 function categoryCounts(){const counts={};for(const p of catalog)counts[p.category]=(counts[p.category]||0)+1;return counts;}
 function renderHero(){
  $('#hero-count').textContent=catalog.length?L(`${catalog.length} позиций из Telegram-прайса Goodmark`,`Goodmark Telegram narxnomasidan ${catalog.length} ta pozitsiya`):L('Каталог пуст','Katalog bo‘sh');
-}
-function renderBrands(){
- $('#brand-list').innerHTML=[...new Set(catalog.map(p=>p.brand))].map(brand=>`<button type="button" class="brand-link ${brand.toLowerCase()===filters.brand.toLowerCase()?'active':''}" data-brand="${esc(brand)}" aria-pressed="${brand.toLowerCase()===filters.brand.toLowerCase()}" aria-label="${esc(L('Товары '+brand,brand+' tovarlari'))}">${esc(brand)}</button>`).join('');
 }
 function renderCategories(){
  const counts=categoryCounts(),list=categories.filter(c=>c[0]!=='all');
@@ -289,51 +238,40 @@ function addButton(p,cls='add-button'){
 function card(p){
  const inCart=cart.find(i=>i.id===p.id),fav=favorites.includes(p.id);
  const chips=[p.variant,p.connection&&p.connection!=='unknown'&&connectionLabel(p.connection)].filter(Boolean);
- const displayName=p.name.toLowerCase().startsWith(p.brand.toLowerCase()+' ')?p.name.slice(p.brand.length+1):p.name;
  return `<article class="product-card">
-  <div class="product-image">
-   <a class="product-open" href="${esc(pageUrl('product',{id:p.id}))}" data-product="${esc(p.id)}" aria-label="${esc(L('Открыть','Ochish')+': '+p.name)}">${p.kind?`<span class="product-tag">${esc(kindLabel(p.kind))}</span>`:''}${artFor(p)}<span class="illustration-note">${esc(L('Иллюстрация','Illyustratsiya'))}</span></a>
-   <button type="button" class="favorite ${fav?'selected':''}" data-favorite="${esc(p.id)}" aria-label="${esc(L('В избранное','Saralanganlarga')+': '+p.name)}" aria-pressed="${fav}">${icon('heart')}</button>
+  <div class="product-image" role="button" tabindex="0" data-product="${esc(p.id)}" aria-label="${esc(L('Открыть','Ochish')+': '+p.name)}">
+   ${p.kind?`<span class="product-tag">${esc(kindLabel(p.kind))}</span>`:''}
+   <button class="favorite ${fav?'selected':''}" data-favorite="${esc(p.id)}" aria-label="${esc(L('В избранное','Saralanganlarga')+': '+p.name)}" aria-pressed="${fav}">${icon('heart')}</button>
+   ${artFor(p)}<span class="illustration-note">${esc(L('Иллюстрация','Illyustratsiya'))}</span>
   </div>
   <div class="product-brand">${esc(p.brand)}</div>
-  <a class="product-name" href="${esc(pageUrl('product',{id:p.id}))}" data-product="${esc(p.id)}" aria-label="${esc(p.name)}">${esc(displayName)}</a>
+  <button class="product-name" data-product="${esc(p.id)}">${esc(p.name)}</button>
   ${p.spec?`<p class="product-spec">${esc(p.spec)}</p>`:''}
   ${chips.length?`<div class="product-chips">${chips.map(c=>`<span>${esc(c)}</span>`).join('')}</div>`:''}
-  <div class="product-bottom"><div class="price">${money(p.price)}</div><span class="availability ${isOrderable(p)?'':'out'}"><i></i>${esc(availabilityLabel(p))}</span>${p.priceDate?`<button type="button" class="card-source" data-product="${esc(p.id)}" aria-label="${esc(L('Источник цены '+p.name,'Narx manbasi '+p.name))}">${esc(L('Прайс','Narxnoma'))} ${esc(formatDate(p.priceDate))} ${icon('arrow',12)}</button>`:''}</div>
+  <div class="product-bottom"><div class="price">${money(p.price)}</div><span class="availability ${isOrderable(p)?'':'out'}"><i></i>${esc(availabilityLabel(p))}</span></div>
   <div class="card-action">${inCart?qtyControl(p,inCart.qty,'card-qty'):addButton(p)}</div>
  </article>`;
 }
 function renderProducts(){
- const all=sortProducts(filterProducts(catalog,PAGE==='home'?emptyFilters():filters,ctx()),sort);
- const featured=[];
- if(PAGE==='home'){
-  for(const kind of ['mouse','keyboard','headset','microphone','arm','webcam']){const p=all.find(p=>p.kind===kind);if(p)featured.push(p);}
-  for(const p of all)if(featured.length<8&&!featured.includes(p))featured.push(p);
- }
- const list=PAGE==='home'?featured:all;
+ const list=sortProducts(filterProducts(catalog,filters,ctx()),sort);
  $('#products').innerHTML=list.map(card).join('');
- $('#result-count').textContent=productCount(list.length);
+ $('#result-count').textContent=`${list.length} ${L('товаров','tovar')}`;
  $('#empty-state').hidden=!!list.length;
- $('#catalog-title').textContent=PAGE==='home'?L('Из прайса. Для твоего сетапа.','Narxnomadan. Setapingiz uchun.'):catalogTitle();
- if(CATALOG_PAGES.has(PAGE)){
-  $('#page-title').textContent=catalogTitle();$('#breadcrumb-current').textContent=catalogTitle();
-  document.title=catalogTitle()+' — Goodmark';
- }
+ $('#catalog-title').textContent=catalogTitle();
  renderActiveFilters();
 }
-function renderStorefront(){renderHero();renderBrands();renderCategories();renderNavLinks();renderFilterControls();renderProducts();updatePageLinks();}
+function renderStorefront(){renderHero();renderCategories();renderNavLinks();renderFilterControls();renderProducts();}
 function applyFilters(next){
  filters={...filters,...next};
- syncFiltersToUrl();renderBrands();renderCategories();renderFilterControls();renderProducts();
+ syncFiltersToUrl();renderCategories();renderFilterControls();renderProducts();
 }
 function resetFilters(){
- filters={...emptyFilters(),category:document.body.dataset.category||'all',favoritesOnly:PAGE==='favorites'};
- syncFiltersToUrl();renderBrands();renderCategories();renderFilterControls();renderProducts();
+ filters={...emptyFilters(),favoritesOnly:false};
+ syncFiltersToUrl();renderCategories();renderFilterControls();renderProducts();
 }
 function goCatalog(){
- const target=filters.favoritesOnly?'favorites':['mouse','keyboard','audio'].includes(filters.category)?filters.category:'catalog';
- if(PAGE!==target)return navigate(target,filterParams());
- syncFiltersToUrl();requestAnimationFrame(()=>$('#catalog').scrollIntoView({behavior:'smooth',block:'start'}));
+ if(location.hash!=='#catalog'){location.hash='catalog';route();}
+ requestAnimationFrame(()=>$('#catalog').scrollIntoView({behavior:'smooth',block:'start'}));
 }
 
 // ---------- product modal ----------
@@ -359,13 +297,11 @@ function renderProductDetail(id){
    <div class="detail-links"><button data-favorite="${esc(p.id)}" aria-pressed="${fav}">${icon('heart',15)} ${esc(fav?L('В избранном','Saralanganda'):L('В избранное','Saralanganlarga'))}</button><button data-copy-product="${esc(p.id)}">${icon('arrow',15)} ${esc(L('Ссылка на товар','Tovar havolasi'))}</button></div>
    <p class="demo-note">${esc(L('Цена — в у.е. по опубликованному прайсу, без пересчёта в другие валюты. Наличие, комплектацию, гарантию и актуальную цену подтвердит менеджер магазина.','Narx — e’lon qilingan narxnoma bo‘yicha y.e.da, boshqa valyutaga o‘tkazilmagan. Mavjudlik, komplekt, kafolat va joriy narxni do‘kon menejeri tasdiqlaydi.'))}</p>
   </div></div>`;
- if($('#related-products'))$('#related-products').innerHTML=catalog.filter(x=>x.category===p.category&&x.id!==p.id).slice(0,4).map(card).join('');
 }
 function openProduct(id){
  if(!findProduct(catalog,id)){toast(L('Товар не найден в текущем каталоге.','Tovar joriy katalogda topilmadi.'));setUrlParam('product','');return;}
- if(PAGE!=='product'||openProductId!==id)return navigate('product',{id});
  track('product_view',{product:id});
- renderProductDetail(id);
+ openProductId=id;renderProductDetail(id);show('product-dialog');setUrlParam('product',id);
 }
 
 // ---------- cart ----------
@@ -374,7 +310,7 @@ function updateCart(){
  store.write(KEY.cart,cart);
  $$('.cart-count').forEach(el=>{el.textContent=cartCount();});
  cartMode='items';renderCart();renderProducts();
- if(openProductId&&(PAGE==='product'||$('#product-dialog').open))renderProductDetail(openProductId);
+ if(openProductId&&$('#product-dialog').open)renderProductDetail(openProductId);
 }
 function add(items,from='catalog'){
  try{
@@ -406,7 +342,7 @@ function renderCart(){
   <button class="button button-dark" id="prepare-draft">${esc(L('Подготовить сообщение менеджеру','Menejerga xabar tayyorlash'))} ${icon('arrow',17)}</button>
   <p>${esc(L('Сумма — по опубликованному прайсу в у.е. Наличие и актуальную цену подтвердит менеджер. Сайт ничего не отправляет сам.','Summa — e’lon qilingan narxnoma bo‘yicha y.e.da. Mavjudlik va narxni menejer tasdiqlaydi. Sayt o‘zi hech narsa yubormaydi.'))}</p>`:'';
 }
-function openCart(){if(PAGE!=='cart')return navigate('cart');cartMode='items';currentDraft=null;setUrlParam('draft','');renderCart();}
+function openCart(){cartMode='items';renderCart();show('cart-dialog');track('cart_view');}
 
 // ---------- manager message draft ----------
 
@@ -419,7 +355,7 @@ function prepareDraft(){
   const draft=buildDraft({id:makeDraftId(crypto.getRandomValues(new Uint8Array(6))),items:cart,catalog,attribution,firstAttribution});
   saveDraft(draft);
   track('draft_created',{draft:draft.id,lines:draft.items.length,qty:draft.items.reduce((s,l)=>s+l.qty,0)});
-  currentDraft=draft;cartMode='draft';setUrlParam('draft',draft.id);renderCart();
+  currentDraft=draft;cartMode='draft';renderCart();
  }catch(e){toast(e.message);}
 }
 function renderDraft(){
@@ -453,49 +389,13 @@ function message(t,role='bot',html=''){
  el.innerHTML=(role==='bot'?'<span class="message-label">GOODMARK AI</span>':'')+`<span>${esc(t)}</span>`+html;
  $('#chat-messages').append(el);$('#chat-messages').scrollTop=$('#chat-messages').scrollHeight;
  if(t)transcript.push({role:role==='bot'?'assistant':'user',content:t});
- const options=[...el.querySelectorAll('[data-plan-id]')].map(b=>({id:b.dataset.planId,qty:Number(b.dataset.planQty)||1}));
- const links=[];
- if(el.querySelector('[data-open-cart]'))links.push({type:'cart'});
- if(el.querySelector('[data-ai-catalog]'))links.push({type:'catalog'});
- if(el.querySelector('[data-manager-link]'))links.push({type:'manager'});
- for(const b of el.querySelectorAll('[data-ai-filters]')){const f=filterSets.get(b.dataset.aiFilters);if(f)links.push({type:'filters',filters:f,label:b.textContent});}
- chatRecords.push({role:role==='bot'?'assistant':'user',content:t,options,links});
- saveChat();
  return el;
 }
 const transcript=[];
-const chatRecords=[];
 const HERO_PROMPT='Нужны беспроводные наушники Logitech до 120 у.е.';
-const WELCOME='Привет! Я сценарный помощник Goodmark: ищу по прайсу модели, бренды, тип и бюджет в у.е. Например: «беспроводные наушники Logitech до 120 у.е.» или «Fifine TAM8 и BM88». В корзину добавляю только после твоего подтверждения.';
-function saveChat(){
- if(PAGE!=='assistant')return;
- try{sessionStorage.setItem('gm2-chat',JSON.stringify({transcript:transcript.slice(-30),messages:chatRecords.slice(-30),pending:pending?.items||null}));}catch{}
-}
-function restoreChat(){
- let saved;
- try{saved=JSON.parse(sessionStorage.getItem('gm2-chat')||'null');}catch{}
- const history=Array.isArray(saved?.messages)?saved.messages:saved?.transcript;
- if(Array.isArray(history))for(const m of history.slice(-30)){
-  if(typeof m.content!=='string'||!['assistant','user'].includes(m.role))continue;
-  let html='';
-  if(m.role==='assistant'){
-   for(const i of Array.isArray(m.options)?m.options.slice(0,12):[]){const p=findProduct(catalog,i?.id);if(p&&Number.isInteger(i.qty)&&i.qty>0&&i.qty<=MAX_QTY)html+=optionList([p],i.qty);}
-   for(const a of Array.isArray(m.links)?m.links.slice(0,5):[]){
-    if(a?.type==='cart')html+='<button class="button button-outline" data-open-cart>Открыть корзину</button>';
-    if(a?.type==='catalog')html+='<button class="button button-outline" data-ai-catalog>Открыть каталог</button>';
-    if(a?.type==='manager')html+=managerLink('assistant');
-    if(a?.type==='filters'&&a.filters&&typeof a.filters==='object')html+=filterButton(readFilters(writeFilters('',a.filters),{categoryIds}),String(a.label||'Показать в каталоге').slice(0,100));
-   }
-  }
-  message(m.content.slice(0,4000),m.role==='user'?'user':'bot',html);
- }
- if(!transcript.length)message(WELCOME);
- if(Array.isArray(saved?.pending))showPlan(saved.pending,'Продолжим подбор. Проверь эти товары перед добавлением.');
-}
 function openAI(prompt){
- if(PAGE!=='assistant')return navigate('assistant',{prompt:prompt||''});
  show('assistant-dialog');track('assistant_open');
- if(!$('#chat-messages').children.length)message(WELCOME);
+ if(!$('#chat-messages').children.length)message('Привет! Я сценарный помощник Goodmark: ищу по прайсу модели, бренды, тип и бюджет в у.е. Например: «беспроводные наушники Logitech до 120 у.е.» или «Fifine TAM8 и BM88». В корзину добавляю только после твоего подтверждения.');
  if(prompt)sendChat(prompt);else $('#chat-input').focus();
 }
 function filterButton(f,label=L('Показать в каталоге','Katalogda ko‘rsatish')){
@@ -549,7 +449,6 @@ function sendChat(input){
 
 function botMessage(t,html=''){const e=document.createElement('div');e.className='bot-message';e.innerHTML=esc(t)+html;$('#bot-body').append(e);$('#bot-body').scrollTop=$('#bot-body').scrollHeight;}
 function openBot(){
- if(PAGE!=='telegram')return navigate('telegram');
  show('bot-dialog');
  if(!$('#bot-body').children.length)botMessage('Привет! Это прототип Goodmark Bot. Каталог, подбор и связь с менеджером. Цены — из Telegram-прайса в у.е., наличие уточняется.');
  track('bot_demo_open');
@@ -581,7 +480,7 @@ function renderInsights(){
  const funnel=[['Загрузки страниц',a.pageViews],['Карточки',a.views],['Добавления',a.adds],['Черновики',a.drafts],['Ссылка менеджера',a.linkOpens]];
  const top=Math.max(1,...funnel.map(f=>f[1]));
  const brands=[...new Set(catalog.map(p=>p.brand))].sort((x,y)=>x.localeCompare(y)),kinds=[...new Set(catalog.map(p=>p.kind).filter(Boolean))].sort(),counts=categoryCounts();
- $('#insights-view').innerHTML=`<div class="insights-top"><div><span class="eyebrow">GOODMARK / BUSINESS DEMO</span><h2>Путь от рекламы до сообщения менеджеру.</h2><p>Источник и кампания сохраняются с каждым действием в этом браузере.</p></div><a href="${esc(pageUrl('home'))}" class="button button-outline">Вернуться в магазин ${icon('arrow',16)}</a></div>
+ $('#insights-view').innerHTML=`<div class="insights-top"><div><span class="eyebrow">GOODMARK / BUSINESS DEMO</span><h1>Путь от рекламы до сообщения менеджеру.</h1><p>Источник и кампания сохраняются с каждым действием в этом браузере.</p></div><a href="#home" class="button button-outline">Вернуться в магазин ${icon('arrow',16)}</a></div>
  <div class="local-notice">Презентационная панель: только действия в этом браузере (${events.length} событий). Черновики и нажатия ссылки менеджера — не покупки, не контакты и не выручка. Общая статистика по всем посетителям требует серверного учёта и авторизации.</div>
  <div class="metrics">
   ${metric('Сессии браузера',a.sessions,'Уникальные session_id этой вкладки/браузера')}
@@ -647,9 +546,7 @@ function createUtmLink(){
  try{
   const utm=Object.fromEntries(['source','medium','campaign','content','term'].map(k=>['utm_'+k,$('#utm-'+k).value]));
   const landing={category:$('#land-category').value,brand:$('#land-brand').value,kind:$('#land-kind').value};
-  const destination=new URL(pageUrl('catalog'),location.origin);
-  const campaignUrl=new URL(buildUtmUrl(destination.href,utm,landing));campaignUrl.hash='';
-  const url=campaignUrl.href;
+  const url=buildUtmUrl(location.origin+location.pathname,utm,landing);
   const n=filterProducts(catalog,landing,ctx()).length;
   $('#utm-result').hidden=false;
   $('#utm-result').innerHTML=`<span id="utm-link">${esc(url)}</span><p class="${n?'':'warn'}">Выдача по ссылке: ${n} товаров${n?'':' — ссылка откроет пустой каталог, измените выдачу.'}</p><div class="admin-tools"><button class="button button-outline" id="copy-utm" type="button">Скопировать</button><a class="button button-outline" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Проверить переход ↗</a></div>`;
@@ -674,37 +571,11 @@ function restoreCatalog(){
 // ---------- routing ----------
 
 function route(){
- // Old campaign/bookmark links still reach their real page.
- if(location.hash.startsWith('#insights')&&PAGE!=='business')return navigate('business');
- if(location.hash.startsWith('#product/'))return openProduct(decodeURIComponent(location.hash.slice(9)));
- if(location.hash==='#catalog'&&PAGE==='home')return goCatalog();
- $('#shop-view').hidden=PAGE!=='home'&&!CATALOG_PAGES.has(PAGE);$('#insights-view').hidden=PAGE!=='business';
- if(CATALOG_PAGES.has(PAGE)){syncFiltersToUrl();$('#sort').value=sort;}
- if(PAGE==='business')renderInsights();
- if(PAGE==='product'){
-  const id=query.get('id')||query.get('product'),p=findProduct(catalog,id);
-  if(p){
-   openProductId=p.id;renderProductDetail(p.id);track('product_view',{product:p.id});
-   $('#page-title').textContent=p.name;$('#breadcrumb-current').textContent=p.name;document.title=p.name+' — Goodmark';
-   $('#related-products').innerHTML=catalog.filter(x=>x.category===p.category&&x.id!==p.id).slice(0,4).map(card).join('');
-  }else{
-   $('#page-title').textContent=L('Товар не найден','Tovar topilmadi');document.title=L('Товар не найден — Goodmark','Tovar topilmadi — Goodmark');
-   $('#product-detail').innerHTML=`<div class="empty-state">${icon('search',40)}<h2>${esc(L('Такой позиции нет в каталоге','Bu pozitsiya katalogda yo‘q'))}</h2><p>${esc(L('Возможно, ссылка устарела. Открой каталог и выбери товар из текущего прайса.','Havola eskirgan bo‘lishi mumkin. Joriy narxnomadan tovar tanlang.'))}</p><a class="button button-dark" href="${esc(pageUrl('catalog'))}">${esc(L('В каталог','Katalogga'))}</a></div>`;
-   $('.related-section').hidden=true;
-  }
- }
- if(PAGE==='cart'){
-  track('cart_view');
-  const draftId=query.get('draft');
-  if(draftId){currentDraft=findDraft(draftId);if(currentDraft){cartMode='draft';renderCart();}else{setUrlParam('draft','');toast('Этот черновик не сохранён в текущем браузере.');}}
- }
- if(PAGE==='assistant'){
-  restoreChat();track('assistant_open');
-  const prompt=query.get('prompt');if(prompt){sendChat(prompt);setUrlParam('prompt','');}
- }
- if(PAGE==='telegram')openBot();
- if(PAGE==='home'&&query.get('product'))openProduct(query.get('product'));
- updatePageLinks();
+ const dashboard=location.hash.startsWith('#insights');
+ $('#shop-view').hidden=dashboard;$('#insights-view').hidden=!dashboard;
+ if(dashboard){renderInsights();window.scrollTo({top:0,behavior:'instant'});return;}
+ if(location.hash.startsWith('#product/'))openProduct(decodeURIComponent(location.hash.slice(9)));
+ else if(location.hash==='#home')window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ---------- events ----------
@@ -712,7 +583,7 @@ function route(){
 function toggleFavorite(id){
  favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];
  store.write(KEY.favorites,favorites);renderProducts();
- if(openProductId&&(PAGE==='product'||$('#product-dialog').open))renderProductDetail(openProductId);
+ if(openProductId===id&&$('#product-dialog').open)renderProductDetail(id);
 }
 const clickActions=[
  ['data-close',b=>close(b.dataset.close)],
@@ -720,13 +591,12 @@ const clickActions=[
  ['data-add',b=>add([{id:b.dataset.add,qty:1}])],
  ['data-qty',b=>changeQty(b.dataset.qty,Number(b.dataset.delta))],
  ['data-remove',b=>{cart=cart.filter(i=>i.id!==b.dataset.remove);updateCart();}],
- ['data-category',(b,e)=>{e.preventDefault();applyFilters({...emptyFilters(),category:b.dataset.category,kind:b.dataset.kind||'',favoritesOnly:false});goCatalog();}],
- ['data-brand',b=>{applyFilters({...emptyFilters(),brand:b.dataset.brand,favoritesOnly:false});goCatalog();}],
+ ['data-category',(b,e)=>{e.preventDefault();applyFilters({category:b.dataset.category,kind:b.dataset.kind||'',favoritesOnly:false});goCatalog();}],
  ['data-reset',()=>resetFilters()],
- ['data-product',(b,e)=>{e.preventDefault();openProduct(b.dataset.product);}],
+ ['data-product',b=>openProduct(b.dataset.product)],
  ['data-prompt',b=>openAI(b.dataset.prompt)],
  ['data-detail-ai',b=>{const p=findProduct(catalog,b.dataset.detailAi);close('product-dialog');openAI(`Помоги выбрать ${p?.name||''}`);}],
- ['data-copy-product',async b=>{const u=new URL(pageUrl('product',{id:b.dataset.copyProduct}),location.origin);toast(await copyText(u.href)?'Ссылка скопирована':'Копирование недоступно');}],
+ ['data-copy-product',async b=>{const u=new URL(location.href);u.search=setSearchParam(u.search,'product',b.dataset.copyProduct);u.hash='';toast(await copyText(u.toString())?'Ссылка скопирована':'Копирование недоступно');}],
  ['data-plan-id',b=>showPlan([{id:b.dataset.planId,qty:Number(b.dataset.planQty)||1}],'Проверь позицию и количество.')],
  ['data-confirm-plan',b=>{
   if(!pending?.items){toast('Подбор уже завершён. Запроси новый.');return;}
@@ -738,7 +608,7 @@ const clickActions=[
  ['data-ai-catalog',()=>{close('assistant-dialog');goCatalog();}],
  ['data-clear-cart',b=>{cart=[];updateCart();message('Корзина очищена.');b.disabled=true;}],
  ['data-cart-ai',()=>{close('cart-dialog');openAI();}],
- ['data-back-to-cart',()=>openCart()],
+ ['data-back-to-cart',()=>{cartMode='items';renderCart();}],
  ['data-copy-draft',()=>copyDraft()],
  ['data-download-draft',b=>{const d=findDraft(b.dataset.downloadDraft);if(d)downloadFile(d.text,`${d.id}.txt`,'text/plain;charset=utf-8');}],
  // Real anchor: the browser opens Telegram from the user's click; we only copy text and record the click.
@@ -750,15 +620,14 @@ const clickActions=[
  ['data-utm-preset',b=>{const p=utmPresets()[Number(b.dataset.utmPreset)];if(!p)return;$('#land-category').value='all';$('#land-brand').value=p.brand;$('#land-kind').value=p.kind;$('#utm-campaign').value=p.campaign;$('#utm-source').focus();}]
 ];
 const idActions={
- 'catalog-nav':()=>{applyFilters({...emptyFilters(),favoritesOnly:false});goCatalog();},
- 'm-catalog':()=>{applyFilters({...emptyFilters(),favoritesOnly:false});goCatalog();},
+ 'catalog-nav':()=>{resetFilters();goCatalog();},
+ 'm-catalog':()=>goCatalog(),
  'cart-nav':openCart,'m-cart':openCart,
- 'favorite-nav':()=>{applyFilters({...emptyFilters(),favoritesOnly:true});goCatalog();},
- 'clear-chat':()=>{transcript.length=0;chatRecords.length=0;pending=null;filterSets.clear();$('#chat-messages').replaceChildren();message(WELCOME);$('#chat-input').focus();},
+ 'favorite-nav':()=>{filters.favoritesOnly=true;renderFilterControls();renderProducts();goCatalog();},
  'hero-ai-button':()=>openAI(HERO_PROMPT),
  'usecase-ai':()=>openAI(),'floating-ai':()=>openAI(),'footer-ai':()=>openAI(),'m-ai':()=>openAI(),
  'bot-nav':openBot,'bot-preview':openBot,'footer-bot':openBot,
- 'lang-toggle':()=>{lang=lang==='ru'?'uz':'ru';store.write(KEY.lang,lang);translate();renderCart();if(openProductId)renderProductDetail(openProductId);renderPageLabels();},
+ 'lang-toggle':()=>{lang=lang==='ru'?'uz':'ru';store.write(KEY.lang,lang);translate();},
  'filters-toggle':b=>{const open=!$('#filter-panel').classList.contains('open');$('#filter-panel').classList.toggle('open',open);b.setAttribute('aria-expanded',open);},
  'prepare-draft':prepareDraft,
  'copy-utm':async()=>toast(await copyText($('#utm-link').textContent)?'Скопировано':'Копирование недоступно — выделите ссылку вручную'),
@@ -772,18 +641,18 @@ const idActions={
 };
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,a,[data-product]');if(!b)return;
- if(b.tagName==='A'&&(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button!==0))return;
  for(const [attr,fn] of clickActions)if(b.hasAttribute(attr)){fn(b,e);return;}
  if(idActions[b.id])idActions[b.id](b);
 });
 document.addEventListener('keydown',e=>{
  if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();$('#search-input').focus();}
+ if((e.key==='Enter'||e.key===' ')&&e.target.matches('.product-image')){e.preventDefault();openProduct(e.target.dataset.product);}
 });
 let searchTimer,priceTimer;
-$('#search-form').addEventListener('submit',e=>{e.preventDefault();clearTimeout(searchTimer);applyFilters({...emptyFilters(),q:$('#search-input').value.trim().slice(0,80),favoritesOnly:false});track('catalog_search',{q:filters.q});goCatalog();});
-$('#search-input').addEventListener('input',()=>{clearTimeout(searchTimer);if(!['catalog','favorites'].includes(PAGE))return;searchTimer=setTimeout(()=>{applyFilters({...emptyFilters(),q:$('#search-input').value.trim().slice(0,80),favoritesOnly:PAGE==='favorites'});},200);});
-$('#sort').addEventListener('change',()=>{sort=$('#sort').value;setUrlParam('sort',sort==='featured'?'':sort);syncFiltersToUrl();renderProducts();});
-$('#f-category').addEventListener('change',e=>{applyFilters({category:e.target.value||'all'});goCatalog();});
+$('#search-form').addEventListener('submit',e=>{e.preventDefault();clearTimeout(searchTimer);applyFilters({q:$('#search-input').value.trim().slice(0,80)});track('catalog_search',{q:filters.q});goCatalog();});
+$('#search-input').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{applyFilters({q:$('#search-input').value.trim().slice(0,80)});if(!$('#insights-view').hidden)goCatalog();},200);});
+$('#sort').addEventListener('change',()=>{sort=$('#sort').value;renderProducts();});
+$('#f-category').addEventListener('change',e=>applyFilters({category:e.target.value||'all'}));
 $('#f-brand').addEventListener('change',e=>applyFilters({brand:e.target.value}));
 $('#f-kind').addEventListener('change',e=>applyFilters({kind:e.target.value}));
 $('#f-connection').addEventListener('change',e=>applyFilters({connection:e.target.value}));
@@ -793,39 +662,15 @@ $('#filter-panel').addEventListener('submit',e=>e.preventDefault());
 $('#chat-form').addEventListener('submit',e=>{e.preventDefault();sendChat($('#chat-input').value);});
 document.addEventListener('submit',e=>{if(e.target.id==='utm-form'){e.preventDefault();createUtmLink();}});
 document.addEventListener('change',e=>{if(e.target.id==='csv-file'&&e.target.files[0]){importCSV(e.target.files[0]);e.target.value='';}});
-window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#insights'))navigate('business');else if(location.hash.startsWith('#product/'))openProduct(decodeURIComponent(location.hash.slice(9)));});
-window.addEventListener('pageshow',e=>{
- if(!e.persisted)return;
- catalog=loadCatalog();cart=sanitizeCart(store.read(KEY.cart,[]));
- favorites=(Array.isArray(store.read(KEY.favorites,[]))?store.read(KEY.favorites,[]):[]).filter(id=>findProduct(catalog,id));
- events=store.read(KEY.events,[]);lang=store.read(KEY.lang,'ru')==='uz'?'uz':'ru';
- translate();updateCart();
- if(PAGE==='cart'&&new URLSearchParams(location.search).get('draft')){
-  currentDraft=findDraft(new URLSearchParams(location.search).get('draft'));if(currentDraft){cartMode='draft';renderCart();}
- }
- if(PAGE==='assistant'){pending=null;transcript.length=0;chatRecords.length=0;filterSets.clear();$('#chat-messages').replaceChildren();restoreChat();}
- if(PAGE==='business')renderInsights();
-});
+window.addEventListener('hashchange',route);
 
 // ---------- start ----------
-
-function renderPageLabels(){
- const labels={
-  cart:[['Твоя корзина','Savatingiz'],['Проверь товары и количество. Затем подготовь сообщение менеджеру Goodmark.','Tovar va miqdorni tekshiring. So‘ng Goodmark menejeriga xabar tayyorlang.']],
-  assistant:[['Соберём твой следующий сетап','Keyingi setapingizni yig‘amiz'],['Опиши задачу, модель или бюджет в у.е. Помощник предложит товары из реального каталога.','Vazifa, model yoki y.e.dagi byudjetni yozing. Yordamchi haqiqiy katalogdan tovar taklif qiladi.']],
-  telegram:[['Goodmark в Telegram','Goodmark Telegramda'],['Попробуй сценарий бота: каталог, подбор, корзина и связь с магазином.','Bot ssenariysini sinang: katalog, tanlov, savat va do‘kon bilan aloqa.']],
-  business:[['Бизнес-панель Goodmark','Goodmark biznes paneli'],['Посмотри путь от рекламы до сообщения менеджеру и подготовь ссылки с UTM.','Reklamadan menejerga xabargacha bo‘lgan yo‘lni ko‘ring va UTM havolalarini tayyorlang.']],
-  contacts:[['На связи. Онлайн и в Малике.','Aloqadamiz. Onlayn va Malikada.'],['Выбирай здесь, уточняй детали у менеджера и знакомься с техникой в магазине.','Bu yerda tanlang, tafsilotlarni menejerdan so‘rang va do‘konda texnika bilan tanishing.']]
- };
- if(labels[PAGE]){const [title,description]=labels[PAGE];$('#page-title').textContent=L(...title);$('#breadcrumb-current').textContent=L(...title);$('#page-description').textContent=L(...description);document.title=L(...title)+' — Goodmark';}
- if(PAGE==='product'&&openProductId){const p=findProduct(catalog,openProductId);$('#page-title').textContent=p.name;$('#breadcrumb-current').textContent=p.name;}
-}
 
 $$('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon);});
 $('#hero-device').innerHTML=art('headphones','#9eafff',true);
 $('#mini-one').innerHTML=art('headphones','#c2c9f7');$('#mini-two').innerHTML=art('headphones','#b9c4ef');
-track('page_view',{page:PAGE,path:location.pathname});
+track('page_view',{page:location.hash||'#home'});
 translate();updateCart();route();
-renderPageLabels();
-if(PAGE==='home')new IntersectionObserver(([entry])=>$('#floating-ai').classList.toggle('hide-near-hero',entry.isIntersecting)).observe($('#home'));
+const productParam=new URLSearchParams(location.search).get('product');
+if(productParam&&!location.hash.startsWith('#insights'))openProduct(productParam);
 fetch('/api/config').then(r=>r.ok?r.json():null).then(d=>{if(d?.aiEnabled){backend=true;$('#assistant-mode').textContent='AI-консультант · живой API';}}).catch(()=>{});

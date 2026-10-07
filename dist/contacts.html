@@ -2,11 +2,11 @@
 <html lang="ru">
 <head>
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
- <meta name="theme-color" content="#2855e8"><meta name="description" content="Goodmark — каталог периферии и аксессуаров по ценам из Telegram-прайса магазина. Наличие подтверждает менеджер.">
- <title>Техника для твоих идей — Goodmark</title>
+ <meta name="theme-color" content="#2855e8"><meta name="description" content="Выбирай здесь, уточняй детали у менеджера и знакомься с техникой в магазине.">
+ <title>На связи. Онлайн и в Малике. — Goodmark</title>
  <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="design.css"><link rel="stylesheet" href="pages.css">
 </head>
-<body data-page="home">
+<body data-page="contacts">
  <div class="topbar"><div class="wrap topbar-inner">
   <span class="top-location" data-icon="location"></span><span>Ташкент · Малика B8</span>
   <span class="top-demo" data-i18n="topNote">Цены из Telegram · наличие уточняется</span>
@@ -31,8 +31,8 @@
    <button id="lang-toggle" aria-label="Переключить язык">RU <span> / UZ</span></button>
   </nav>
  </header>
- <main>
- <div id="shop-view">
+ <main><section class="wrap page-intro"><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html" data-page-link="home" data-i18n="home">Главная</a><span>/</span><span aria-current="page" id="breadcrumb-current">На связи. Онлайн и в Малике.</span></nav><span class="page-kicker">GOODMARK / YOUR NEXT UPGRADE</span><h1 id="page-title">На связи. Онлайн и в Малике.</h1><p id="page-description">Выбирай здесь, уточняй детали у менеджера и знакомься с техникой в магазине.</p></section>
+ <div id="shop-view" hidden>
   <section class="wrap hero" id="home">
    <div class="hero-main">
     <div class="hero-copy">
@@ -104,7 +104,7 @@
    <div class="product-grid" id="products"></div>
    <div id="empty-state" class="empty-state" hidden><span data-icon="search"></span><h3 data-i18n="emptyTitle">Пока ничего не нашли</h3><p data-i18n="emptyText">Попробуй другую модель, бренд или сними часть фильтров.</p><button class="button button-dark" data-reset data-i18n="resetFilters">Сбросить фильтры</button></div>
    </div></div>
-   <div class="page-extra"><a class="button button-dark" href="catalog.html" data-page-link="catalog"><span data-i18n="viewAll">Смотреть весь каталог</span> <span data-icon="arrow"></span></a></div><p class="catalog-disclosure" data-i18n="catalogDisclosure">Цены — из публикаций Telegram-канала Goodmark, в у.е.; дата и ссылка на публикацию — в карточке товара. Наличие на сайте не отслеживается и подтверждается менеджером. Изображения — иллюстрации, а не фотографии товаров.</p>
+   <p class="catalog-disclosure" data-i18n="catalogDisclosure">Цены — из публикаций Telegram-канала Goodmark, в у.е.; дата и ссылка на публикацию — в карточке товара. Наличие на сайте не отслеживается и подтверждается менеджером. Изображения — иллюстрации, а не фотографии товаров.</p>
   </section>
   <section class="wrap usecase-banner">
    <div class="usecase-copy"><span class="eyebrow">ONE REQUEST. YOUR SETUP.</span><h2 data-i18n="usecaseTitle">Не знаешь модель?<br>Начни с задачи.</h2><p data-i18n="usecaseText">«Нужен микрофон для видео», «беспроводная мышь до 50 у.е.» —<br>помощник отфильтрует прайс за тебя.</p><button class="button button-dark" id="usecase-ai"><span data-icon="spark"></span><span data-i18n="askAi">Спросить Goodmark AI</span></button></div>
@@ -117,7 +117,10 @@
   <section class="wrap telegram-banner"><span class="telegram-orb" data-icon="telegram"></span><div><h2 data-i18n="tgTitle">Goodmark теперь ещё ближе.</h2><p data-i18n="tgText">Каталог, подбор и связь с магазином — в знакомом Telegram.</p></div><button class="button button-outline" id="bot-preview"><span data-i18n="tgButton">Посмотреть бот-демо</span><span data-icon="arrow"></span></button></section>
  </div>
  <section id="insights-view" class="wrap insights-view" hidden></section>
- </main>
+ <section class="wrap contact-grid">
+ <div class="contact-main"><span class="eyebrow">GOODMARK / MALIKA B8</span><h2>Техника начинается<br>с хорошего выбора.</h2><p>Магазин Goodmark в торговом центре «Малика», B8, Ташкент. Спросите менеджера о наличии, комплектации, гарантии и актуальной цене перед покупкой.</p><a class="button button-dark" href="https://t.me/goodmarkuzmalika" target="_blank" rel="noopener noreferrer" data-manager-link="contacts">Написать менеджеру <span data-icon="arrow"></span></a><div class="contact-graphic" aria-hidden="true"><span data-icon="location"></span><strong>MALIKA<span>B8</span></strong></div></div>
+ <div class="contact-cards"><article class="contact-card"><span data-icon="location"></span><h3>В магазине</h3><p>Ташкент · ТЦ «Малика» · B8</p><small>Время работы и маршрут уточните у менеджера.</small></article><article class="contact-card"><span data-icon="telegram"></span><h3>На связи</h3><a href="tel:+998998887787">+998 99 888 77 87</a><a href="https://t.me/goodmarkuzmalika" target="_blank" rel="noopener noreferrer" data-manager-link="contacts_card">Менеджер в Telegram ↗</a></article><article class="contact-card"><span data-icon="spark"></span><h3>Новинки и прайс</h3><a href="https://t.me/goodmark_uz" target="_blank" rel="noopener noreferrer">Telegram-канал Goodmark ↗</a><a href="https://www.instagram.com/goodmarkuz/" target="_blank" rel="noopener noreferrer">Instagram @goodmarkuz ↗</a></article></div>
+ </section></main>
  <footer class="footer">
   <div class="wrap footer-main">
    <div><a href="index.html" data-page-link="home" class="logo footer-logo">goodmark<span class="logo-dot">.</span></a><p>Техника для твоих идей.<br>Ташкент · Малика B8</p></div>

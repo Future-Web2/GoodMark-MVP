@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#f5f6f2">
+ <meta name="description" content="Две версии магазина Goodmark: первый прототип и новый магазин с отдельными страницами. Выбери, какую открыть.">
+ <title>Goodmark — выбери версию магазина</title>
+ <style>
+  :root{--ink:#16233c;--muted:#7c879b;--blue:#2855e8;--lime:#e3ef91;--line:#e2e6ea;--paper:#f5f6f2}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Manrope,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+  a:focus-visible{outline:3px solid #829eff;outline-offset:6px}
+  svg{display:block;max-width:100%}
+  h1,h2,p{margin:0}
+  .wrap{max-width:1260px;margin:0 auto;padding:32px 40px 26px}
+  .header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .logo{display:flex;align-items:center;gap:12px;font-size:31px;font-weight:800;letter-spacing:-1.6px;line-height:1}
+  .logo svg{width:31px;height:40px;flex-shrink:0}
+  .logo .dot{color:var(--blue)}
+  .logo small{display:block;color:#8591a6;font-size:7px;font-weight:700;letter-spacing:2.1px;margin-top:9px;line-height:1.3}
+  .header-tag{display:flex;align-items:center;gap:9px;color:#667690;font-size:11px;font-weight:700;letter-spacing:.3px;padding:10px 15px;border:1px solid #dce2eb;border-radius:100px;background:#ffffff73}
+  .header-tag i{height:6px;width:6px;background:#86a39b;border-radius:50%;flex-shrink:0}
+  .intro{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.8fr);align-items:end;gap:60px;margin:54px 0 35px}
+  .eyebrow{font-size:10px;font-weight:800;letter-spacing:1.8px;color:#8693a8;margin-bottom:16px}
+  h1{font-size:clamp(46px,5.15vw,66px);font-weight:800;letter-spacing:-3.3px;line-height:1.06}
+  h1 span{display:block;color:var(--blue)}
+  .intro-copy{font-size:14px;line-height:1.9;color:#7c879c;max-width:355px;padding-bottom:5px}
+  .intro-copy strong{font-weight:600;color:#43556f}
+  .versions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+  .version{display:flex;flex-direction:column;min-width:0;background:white;border:1px solid #dfe5ed;border-radius:24px;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .version:hover{transform:translateY(-5px);border-color:#b8c9ef;box-shadow:0 16px 32px #172b5210}
+  .version:active{transform:translateY(-1px)}
+  .version-v2{border-color:#ccdaf7;box-shadow:0 7px 25px #284c9b06}
+  .card-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:24px 26px 22px}
+  .version-index{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:800;letter-spacing:.5px;color:#8796ad}
+  .version-index b{height:31px;width:37px;display:grid;place-items:center;font-size:13px;font-weight:800;letter-spacing:0;background:#eff2f6;color:#637995;border-radius:8px}
+  .version-v2 .version-index b{background:#eaf0ff;color:var(--blue)}
+  .status{font-size:10px;line-height:1.6;font-weight:700;color:#92a0b5;padding:5px 10px;border:1px solid #e7ebf1;border-radius:100px}
+  .status-new{display:flex;align-items:center;gap:6px;background:var(--lime);color:#4f6136;border-color:var(--lime)}
+  .status-new i{width:4px;height:4px;border-radius:50%;background:#7a9944}
+  .preview{margin:0 14px;height:213px;border-radius:15px;position:relative;overflow:hidden;isolation:isolate}
+  .preview-v1{background:#eaf0f7;border:1px solid #e0e7f1}
+  .preview-v2{background:#192a4a;border:1px solid #263b60}
+  .preview-top{position:absolute;left:20px;right:20px;top:16px;display:flex;align-items:center;gap:10px;z-index:3}
+  .preview-brand{font-size:10px;font-weight:800;letter-spacing:-.35px;color:#3d5279}
+  .preview-brand em{color:#3c69d4;font-style:normal}
+  .preview-nav{display:flex;gap:4px;margin-left:auto}
+  .preview-nav i{width:23px;height:3px;background:#aebdd4;border-radius:2px}
+  .preview-v2 .preview-brand{color:#eaf0ff}
+  .preview-v2 .preview-brand em{color:var(--lime)}
+  .preview-v2 .preview-nav i{background:#6e87b5}
+  .preview-v1 .device-art{position:absolute;width:71%;height:187px;right:-34px;bottom:0;z-index:2}
+  .preview-text{position:absolute;left:25px;top:65px;color:#243855;font-size:27px;line-height:1.1;font-weight:800;letter-spacing:-1.25px;z-index:3}
+  .preview-text span{color:#567bc4}
+  .preview-button{display:flex;align-items:center;gap:15px;position:absolute;left:25px;bottom:35px;font-size:7px;line-height:1.3;font-weight:700;border-radius:5px;background:#294c96;color:white;padding:9px 12px;z-index:3}
+  .preview-button svg{height:8px;width:8px}
+  .preview-orbit{position:absolute;right:30px;top:29px;height:171px;width:171px;border:1px solid #d3deed;border-radius:50%;transform:rotate(-20deg) scaleY(.78);z-index:0}
+  .preview-v2::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 74% 70%,#496eab55,transparent 63%);z-index:0}
+  .preview-v2 .device-art{position:absolute;left:0;bottom:-4px;width:100%;height:178px;z-index:2}
+  .preview-v2 .preview-orbit{width:282px;height:282px;top:-35px;right:33px;border-color:#4b628347;transform:rotate(-26deg) scaleY(.72)}
+  .preview-caption{position:absolute;top:49px;left:21px;font-size:8px;font-weight:700;letter-spacing:1.6px;color:#8199c1;z-index:3}
+  .preview-prompt{display:flex;align-items:center;gap:7px;position:absolute;left:23px;bottom:22px;background:#263d62e6;border:1px solid #6684b538;border-radius:8px;padding:9px 11px;color:#d1def6;font-size:8px;z-index:3;box-shadow:0 5px 12px #07172e19}
+  .preview-prompt svg{height:12px;width:12px;color:var(--lime);flex-shrink:0}
+  .card-copy{padding:25px 26px 27px;display:flex;flex-direction:column;flex:1}
+  h2{font-size:25px;font-weight:800;letter-spacing:-.8px;line-height:1.25}
+  .card-copy>p{font-size:13px;line-height:1.85;color:#8794aa;margin-top:12px;max-width:445px}
+  .features{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;margin-bottom:25px}
+  .features span{font-size:10px;line-height:1.5;color:#73849f;background:#f3f5f9;border:1px solid #e9edf4;border-radius:6px;padding:5px 8px}
+  .version-v2 .features span{background:#f0f4ff;color:#6981b6;border-color:#e4ebfc}
+  .card-action{display:flex;align-items:center;justify-content:space-between;gap:15px;min-height:48px;padding:13px 17px;background:#f1f4f9;border:1px solid #e3e9f2;border-radius:11px;color:#53729f;font-size:13px;font-weight:700;margin-top:auto;transition:background .2s,color .2s}
+  .card-action svg{height:18px;width:18px;flex-shrink:0;transition:transform .2s}
+  .version:hover .card-action{background:#e9effb;color:#2855b3}
+  .version:hover .card-action svg{transform:translateX(3px)}
+  .version-v2 .card-action{color:white;background:var(--blue);border-color:var(--blue)}
+  .version-v2:hover .card-action{background:#1e45c6;color:white}
+  .footer{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-top:27px;padding-top:21px;border-top:1px solid #dde3e9}
+  .note{font-size:11px;line-height:1.8;color:#8a97aa;max-width:670px}
+  .note span{color:#aeb8c7;margin:0 5px}
+  .footer-brand{font-size:9px;font-weight:700;letter-spacing:1.4px;color:#a2acbc;white-space:nowrap}
+  @media(min-width:1500px){.wrap{padding-top:42px}.intro{margin-top:70px}.preview{height:235px}.preview-v1 .device-art{height:207px}.preview-v2 .device-art{height:195px}.card-copy{padding-top:28px;padding-bottom:29px}}
+  @media(max-width:1050px){.wrap{padding-left:28px;padding-right:28px}.intro{gap:30px;grid-template-columns:1.3fr .8fr}h1{font-size:54px;letter-spacing:-2.7px}.intro-copy{font-size:13px}.versions{gap:20px}.card-heading{padding:21px 23px}.card-copy{padding:23px}.preview-text{font-size:25px;left:21px}.preview-button{left:21px}.preview-v1 .device-art{right:-37px;width:75%}h2{font-size:23px}.version-index{font-size:11px;gap:9px}}
+  @media(max-width:800px){.intro{grid-template-columns:minmax(0,1fr);gap:22px;margin:41px 0 30px}h1{font-size:54px;letter-spacing:-2.6px}.intro-copy{max-width:560px;font-size:14px;line-height:1.85}.versions{gap:17px}.card-heading{padding:19px 19px}.version-index{font-size:10px;gap:7px;letter-spacing:0}.version-index b{height:28px;width:33px;font-size:12px}.status{font-size:9px;padding:4px 8px}.preview{height:186px;margin:0 10px;border-radius:13px}.preview-text{left:16px;top:59px;font-size:22px;letter-spacing:-1px}.preview-button{left:16px;bottom:30px;padding:8px 9px;font-size:6px;gap:10px}.preview-top{left:16px;right:16px}.preview-v1 .device-art{height:163px;right:-39px;width:82%}.preview-orbit{height:140px;width:140px;right:9px;top:43px}.preview-v2 .device-art{height:156px}.preview-caption{font-size:7px;left:16px;top:45px}.preview-prompt{left:16px;bottom:17px;font-size:7px;gap:6px;padding:8px}.card-copy{padding:21px 19px 22px}h2{font-size:22px;letter-spacing:-.65px}.card-copy>p{font-size:12px;line-height:1.9}.features{gap:6px;margin-top:15px;margin-bottom:21px}.features span{font-size:9px;padding:4px 6px}.card-action{font-size:12px;min-height:45px;padding:12px 14px}.footer{gap:20px}.note{font-size:10px}.footer-brand{font-size:8px;letter-spacing:1px}}
+  @media(max-width:600px){.wrap{padding:24px 19px 24px}.logo{font-size:27px;gap:9px;letter-spacing:-1.4px}.logo svg{width:26px;height:34px}.logo small{font-size:6px;letter-spacing:1.7px;margin-top:8px}.header-tag{font-size:9px;padding:8px 10px;gap:6px;letter-spacing:0}.header-tag i{height:5px;width:5px}.intro{margin-top:39px;margin-bottom:26px;gap:19px}.eyebrow{font-size:9px;letter-spacing:1.5px;margin-bottom:14px}h1{font-size:43px;line-height:1.08;letter-spacing:-2.1px}.intro-copy{font-size:13px;line-height:1.85;padding:0;max-width:420px}.versions{grid-template-columns:minmax(0,1fr);gap:20px}.version{border-radius:20px}.card-heading{padding:20px 22px}.version-index{font-size:11px;gap:10px}.version-index b{height:30px;width:35px;font-size:12px}.status{font-size:10px;padding:4px 10px}.preview{height:202px;margin:0 12px;border-radius:14px}.preview-top{left:20px;right:20px}.preview-text{left:23px;top:61px;font-size:27px;letter-spacing:-1.1px}.preview-button{left:23px;bottom:30px;padding:9px 11px;font-size:7px;gap:14px}.preview-v1 .device-art{height:180px;width:77%;right:-33px}.preview-orbit{height:165px;width:165px;right:18px;top:37px}.preview-v2 .device-art{height:171px}.preview-caption{font-size:8px;left:21px;top:48px}.preview-prompt{font-size:8px;left:21px;bottom:21px;padding:9px 10px}.card-copy{padding:23px 23px 25px}h2{font-size:24px;letter-spacing:-.8px}.card-copy>p{font-size:13px;line-height:1.85;margin-top:11px}.features{gap:7px;margin-top:17px;margin-bottom:23px}.features span{font-size:10px;padding:5px 7px}.card-action{font-size:13px;min-height:48px;padding:13px 16px}.footer{flex-direction:column;align-items:flex-start;gap:13px;margin-top:25px;padding-top:20px}.note{font-size:10px;line-height:1.85;max-width:100%}.footer-brand{font-size:8px;letter-spacing:1.2px}}
+  @media(max-width:380px){.wrap{padding-left:17px;padding-right:17px}.logo{font-size:25px}.header-tag{font-size:8px;padding:7px 9px}h1{font-size:39px;letter-spacing:-1.8px}.intro-copy{font-size:12px}.preview{height:186px}.preview-v1 .device-art{height:164px;width:80%;right:-35px}.preview-text{font-size:24px;left:19px;top:58px}.preview-button{left:19px;font-size:6px;bottom:29px}.preview-v2 .device-art{height:157px}.preview-prompt{font-size:7px;left:17px;bottom:18px}.card-heading{padding-left:20px;padding-right:20px}.card-copy{padding-left:20px;padding-right:20px}h2{font-size:22px}.features span{font-size:9px}.preview-top{left:17px;right:17px}.preview-caption{left:17px;font-size:7px}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}a,.version,.card-action,.card-action svg{transition:none}.version:hover,.version:active{transform:none}}
+ </style>
+</head>
+<body>
+ <div class="wrap">
+  <header class="header">
+   <div class="logo" aria-label="Goodmark">
+    <svg viewBox="0 0 39 46" aria-hidden="true"><g fill="#2855e8"><rect x="11" y="10" width="7" height="7" rx="1.5" transform="rotate(45 14.5 13.5)"/><rect x="2" y="19" width="7" height="7" rx="1.5" transform="rotate(45 5.5 22.5)"/><rect x="20" y="19" width="7" height="7" rx="1.5" transform="rotate(45 23.5 22.5)"/><rect x="11" y="28" width="7" height="7" rx="1.5" transform="rotate(45 14.5 31.5)"/></g><g fill="#c3d771"><rect x="20" y="1" width="7" height="7" rx="1.5" transform="rotate(45 23.5 4.5)"/><rect x="29" y="10" width="7" height="7" rx="1.5" transform="rotate(45 32.5 13.5)"/><rect x="20" y="37" width="7" height="7" rx="1.5" transform="rotate(45 23.5 40.5)"/></g></svg>
+    <div>goodmark<span class="dot">.</span><small>ТЕХНИКА ДЛЯ ТВОИХ ИДЕЙ</small></div>
+   </div>
+   <span class="header-tag"><i></i>Выбор версии</span>
+  </header>
+  <main>
+   <section class="intro" aria-labelledby="page-title">
+    <div><p class="eyebrow">GOODMARK / ДВА ВЗГЛЯДА НА МАГАЗИН</p><h1 id="page-title">Две версии.<span>Один Goodmark.</span></h1></div>
+    <p class="intro-copy">Первый прототип и новый магазин —<br>выбери, с какого начать. <strong>Каталог, подбор<br>и связь с менеджером</strong> в обоих вариантах.</p>
+   </section>
+   <section class="versions" aria-label="Версии магазина Goodmark">
+    <a class="version version-v1" href="v1/index.html" aria-label="Открыть V1 — первую версию Goodmark">
+     <div class="card-heading"><span class="version-index"><b>V1</b>ПЕРВАЯ ВЕРСИЯ</span><span class="status">Классическая</span></div>
+     <div class="preview preview-v1" aria-hidden="true">
+      <div class="preview-top"><span class="preview-brand">goodmark<em>.</em></span><span class="preview-nav"><i></i><i></i><i></i></span></div>
+      <div class="preview-orbit"></div>
+      <div class="preview-text">Техника<br>для твоих<br><span>идей.</span></div>
+      <span class="preview-button">В каталог <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M1 6h10M7 2l4 4-4 4"/></svg></span>
+      <svg class="device-art" viewBox="0 0 310 220" fill="none">
+       <defs><linearGradient id="v1-shell" x1="55" y1="35" x2="241" y2="209" gradientUnits="userSpaceOnUse"><stop stop-color="#f7faff"/><stop offset=".5" stop-color="#c7d5ed"/><stop offset="1" stop-color="#8b9ec2"/></linearGradient><linearGradient id="v1-pad" x1="70" y1="80" x2="246" y2="206" gradientUnits="userSpaceOnUse"><stop stop-color="#53657f"/><stop offset="1" stop-color="#1c2b45"/></linearGradient><filter id="v1-shadow" x="-30%" y="-25%" width="170%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#3e5887" flood-opacity=".16"/></filter></defs>
+       <g transform="rotate(-14 166 120)" filter="url(#v1-shadow)">
+        <path d="M84 136 79 100C75 47 111 22 164 21c57-1 94 34 86 84l-6 33-16-5 6-31c6-35-19-61-69-60-45 0-72 24-67 60l5 30Z" fill="url(#v1-shell)" stroke="#a9bad5"/>
+        <path d="M88 91c0-40 33-60 77-60 49 0 82 29 78 68" stroke="#f9fbff" stroke-width="2" opacity=".7"/>
+        <path d="M99 98c-3-34 23-53 66-54 43-1 70 22 68 55" stroke="url(#v1-pad)" stroke-width="10"/>
+        <path d="m91 111 6 34m144-34-6 34" stroke="#a3b7d5" stroke-width="9" stroke-linecap="round"/>
+        <rect x="69" y="114" width="54" height="84" rx="25" fill="url(#v1-pad)"/>
+        <rect x="64" y="115" width="45" height="82" rx="22" fill="url(#v1-shell)" stroke="#b7c6dd"/>
+        <rect x="70" y="122" width="31" height="67" rx="15" stroke="#f3f7ff" opacity=".7"/>
+        <rect x="217" y="113" width="52" height="86" rx="25" fill="url(#v1-pad)"/>
+        <rect x="229" y="113" width="49" height="86" rx="24" fill="url(#v1-shell)" stroke="#b7c6dd"/>
+        <rect x="235" y="120" width="35" height="71" rx="17" stroke="#f6f9ff" opacity=".7"/>
+       </g>
+      </svg>
+     </div>
+     <div class="card-copy">
+      <h2>Всё на одной странице.</h2>
+      <p>Первый взгляд на Goodmark: прайс, сценарный помощник и корзина в компактном формате.</p>
+      <div class="features"><span>Каталог и цены</span><span>AI-сценарий</span><span>Быстрые панели</span></div>
+      <span class="card-action">Открыть V1 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span>
+     </div>
+    </a>
+    <a class="version version-v2" href="v2/index.html" aria-label="Открыть V2 — новый магазин Goodmark">
+     <div class="card-heading"><span class="version-index"><b>V2</b>НОВЫЙ МАГАЗИН</span><span class="status status-new"><i></i>Новая версия</span></div>
+     <div class="preview preview-v2" aria-hidden="true">
+      <div class="preview-top"><span class="preview-brand">goodmark<em>.</em></span><span class="preview-nav"><i></i><i></i><i></i></span></div>
+      <div class="preview-orbit"></div><span class="preview-caption">YOUR IDEAS. YOUR SETUP.</span>
+      <svg class="device-art" viewBox="0 0 520 230" fill="none">
+       <defs><linearGradient id="v2-shell" x1="315" y1="15" x2="469" y2="212" gradientUnits="userSpaceOnUse"><stop stop-color="#eff3ff"/><stop offset=".37" stop-color="#a9baff"/><stop offset="1" stop-color="#788bb9"/></linearGradient><linearGradient id="v2-dark" x1="307" y1="54" x2="440" y2="210" gradientUnits="userSpaceOnUse"><stop stop-color="#50617c"/><stop offset="1" stop-color="#172238"/></linearGradient><linearGradient id="v2-metal" x1="80" y1="85" x2="314" y2="217" gradientUnits="userSpaceOnUse"><stop stop-color="#dbe5f8"/><stop offset=".48" stop-color="#98aed4"/><stop offset="1" stop-color="#496895"/></linearGradient><filter id="v2-shadow" x="-35%" y="-30%" width="180%" height="185%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#08162f" flood-opacity=".34"/></filter></defs>
+       <g transform="translate(72 80) rotate(-14 111 61) skewX(-9)" filter="url(#v2-shadow)">
+        <rect width="221" height="103" rx="12" fill="#45668f"/>
+        <rect y="-6" width="221" height="101" rx="10" fill="url(#v2-metal)" stroke="#b5c7e5"/>
+        <rect x="8" y="3" width="205" height="83" rx="5" fill="#2c456c"/>
+        <g fill="#d9e4fa" stroke="#f0f5ff" stroke-width=".6"><path d="M16 11h14v14H16zm21 0h14v14H37zm21 0h14v14H58zm21 0h14v14H79zm21 0h14v14h-14zm21 0h14v14h-14zm21 0h14v14h-14zm21 0h14v14h-14zm21 0h14v14h-14ZM16 33h14v14H16zm21 0h14v14H37zm21 0h14v14H58zm21 0h14v14H79zm21 0h14v14h-14zm21 0h14v14h-14zm21 0h14v14h-14zm21 0h14v14h-14zm21 0h14v14h-14ZM16 55h19v14H16zm26 0h19v14H42zm26 0h88v14H68zm95 0h14v14h-14zm21 0h14v14h-14Z"/></g>
+        <path d="M17 13h10M69 56h86" stroke="#adc4fa" stroke-width="10"/>
+        <path d="M29 95h163" stroke="#85a1ee" stroke-width="2"/>
+       </g>
+       <g transform="rotate(-15 376 121)" filter="url(#v2-shadow)">
+        <path d="m315 128-6-25c-7-46 21-76 68-77 49-1 80 28 75 71l-4 27-15-4 4-27c3-28-18-50-59-50-38 1-59 22-54 55l5 26Z" fill="url(#v2-shell)" stroke="#a6b9e2"/>
+        <path d="M316 94c-2-37 24-59 62-59 42 0 70 24 67 60" stroke="#f5f7ff" stroke-width="2" opacity=".65"/>
+        <path d="M324 94c-1-29 19-48 53-48 36-1 58 20 57 46" stroke="url(#v2-dark)" stroke-width="9"/>
+        <path d="m320 108 5 21m116-24-4 25" stroke="#b1c5e7" stroke-width="8" stroke-linecap="round"/>
+        <rect x="298" y="116" width="44" height="78" rx="21" fill="url(#v2-dark)"/>
+        <rect x="293" y="117" width="36" height="76" rx="18" fill="url(#v2-shell)" stroke="#bdd0f2"/>
+        <rect x="298" y="123" width="25" height="63" rx="12" stroke="#f5f7ff" opacity=".65"/>
+        <rect x="419" y="113" width="44" height="79" rx="21" fill="url(#v2-dark)"/>
+        <rect x="429" y="114" width="41" height="78" rx="20" fill="url(#v2-shell)" stroke="#bdd0f2"/>
+        <rect x="435" y="120" width="29" height="65" rx="14" stroke="#f5f7ff" opacity=".65"/>
+        <path d="M440 182h9" stroke="#365ba7" stroke-width="2.3" stroke-linecap="round"/>
+       </g>
+       <g transform="rotate(22 116 77)" filter="url(#v2-shadow)">
+        <path d="M95 64c0-16 9-26 22-26s22 10 22 26l1 25c1 18-8 28-22 28S93 106 94 88Z" fill="#dfe8fb" stroke="#9eb6df"/>
+        <path d="M117 40v28M95 68h44" stroke="#869fca" stroke-width=".8"/>
+        <rect x="114" y="45" width="6" height="14" rx="3" fill="#29436a"/>
+        <path d="M100 48c3-5 7-7 12-7" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+       </g>
+      </svg>
+      <span class="preview-prompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4Z"/></svg>Начни с идеи. Собери свой сетап.</span>
+     </div>
+     <div class="card-copy">
+      <h2>Больше пространства для выбора.</h2>
+      <p>Новый дизайн и 12 отдельных страниц: категории, товары, корзина, помощник и бизнес-раздел.</p>
+      <div class="features"><span>12 страниц</span><span>Категории и товары</span><span>AI и аналитика</span></div>
+      <span class="card-action">Открыть V2 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span>
+     </div>
+    </a>
+   </section>
+  </main>
+  <footer class="footer"><p class="note">Демонстрационные версии <span>•</span> Цены из Telegram-прайса <span>•</span> Наличие уточняется</p><span class="footer-brand">GOODMARK / ТАШКЕНТ</span></footer>
+ </div>
+ <script>
+  (() => {
+   const incoming = new URLSearchParams(location.search);
+   const attribution = new URLSearchParams();
+   for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+    if (incoming.has(key)) attribution.set(key, incoming.get(key));
+   }
+   if (!attribution.size) return;
+   for (const path of ['v1/index.html', 'v2/index.html']) {
+    document.querySelector(`a[href="${path}"]`).setAttribute('href', `${path}?${attribution}`);
+   }
+  })();
+ </script>
+</body>
+</html>

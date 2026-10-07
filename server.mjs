@@ -3,7 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {consult,analyze} from './ai-service.mjs';
-const root=path.join(path.dirname(fileURLToPath(import.meta.url)),'dist');
+const root=path.join(path.dirname(fileURLToPath(import.meta.url)),process.env.STATIC_DIRECTORY==='site'?'site':'dist');
 const port=Number(process.env.PORT||4173);
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.csv':'text/csv; charset=utf-8'};
 const buckets=new Map();

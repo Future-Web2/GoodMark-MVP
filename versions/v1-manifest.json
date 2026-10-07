@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "commit": "a651d2e063be6371aea7cd3a58e8cf2ee2977cc9",
+  "files": [
+    "dist/app.js",
+    "dist/art.js",
+    "dist/catalog-source.json",
+    "dist/catalog-template.csv",
+    "dist/catalog.js",
+    "dist/core.js",
+    "dist/favicon.svg",
+    "dist/index.html",
+    "dist/style.css"
+  ]
+}
